@@ -1,4 +1,4 @@
-# Marlin firmware for the AnyCubic Kobra PLUS.
+# Marlin firmware for the AnyCubic Kobra PLUS
 Based off Marlin 2.0.8 (bugfix)
 
 # Important - READ THIS
