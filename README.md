@@ -34,6 +34,10 @@ The animation graphic will appear on the LCD, within 10 seconds you will hear fi
 13. Use the LCD Prepare-->Levelling-->Auto Level
 14. Firmware Update complete.
 
+If you want the M117 support, use the DWIN_SET, place that on a black SD card, with the printer power off, insert the card in the LCD SD card slot, power up, updating will require approximately 25 seconds. A success message will appear the top of the display. Power off, wait 10 seconds, power on.
+
+Be aware the DWIN_SET is a very colourful display set, not the monochrome look of the stock LCD.
+
 eSteps for extrusion, any PID tuning may have to be redone
 
 # Firmware Changes
@@ -46,6 +50,7 @@ eSteps for extrusion, any PID tuning may have to be redone
 6. Pause function on LCD is supported as well as filament changes
 7. Firmware version info indicates enabled items
 8. For PREPARE, filament load/unload has been automated
+9. M117 GCODE (for messages like layer height or which layer is printing) is support but the DWIN_SET is required for the LCD
 
 CJ = Classic Jerk
 LA = Linear Advance
