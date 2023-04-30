@@ -32,6 +32,7 @@
 
 #if ENABLED(ANYCUBIC_LCD_DGUS)
 
+#include "dgus_tft_defs.h"
 #include "dgus_tft.h"
 #include "dgus_Tunes.h"
 #include "dgus_FileNavigator.h"
@@ -42,6 +43,8 @@
 //#include "../../../../libs/build_date.h"
 #include "../../../../MarlinCore.h"
 #include "../../../../feature/powerloss.h"
+#include "../../module/printcounter.h"
+//#include "../../module/planner.h"
 
 namespace Anycubic {
 
@@ -287,6 +290,10 @@ void DgusTFT::IdleLoop()  {
   } else if (page_index_now == 211 || page_index_now == 212) {
 
     page211_212_handle();
+		
+	} else if (page_index_now == 213) {
+
+    page213_handle();// MEL_MOD for printer stats
 
   } else {
 
@@ -1087,22 +1094,22 @@ void DgusTFT::SelectFile() {
   strncpy(selectedfile, panel_command + 4, command_len - 4);
   selectedfile[command_len - 5] = '\0';
   gcodeComment = "G-Code Status Area";// MEL_MOD malebuffy
-#if ACDEBUG(AC_FILE)
+//#if ACDEBUG(AC_FILE)
   SERIAL_ECHOLNPAIR_F(" Selected File: ", selectedfile);
-#endif
+//#endif
   switch (selectedfile[0]) {
     case '/':   // Valid file selected
-      //        SendtoTFTLN(AC_msg_sd_file_open_success);
+        //SendtoTFTLN(AC_msg_sd_file_open_success);
       break;
 
     case '<':   // .. (go up folder level)
       filenavigator.upDIR();
-      //        SendtoTFTLN(AC_msg_sd_file_open_failed);
+          //SendtoTFTLN(AC_msg_sd_file_open_failed);
       SendFileList( 0 );
       break;
     default:   // enter sub folder
       filenavigator.changeDIR(selectedfile);
-      //        SendtoTFTLN(AC_msg_sd_file_open_failed);
+          //SendtoTFTLN(AC_msg_sd_file_open_failed);
       SendFileList( 0 );
       break;
   }
@@ -1292,7 +1299,7 @@ void DgusTFT::ProcessPanelRequest() {
 void DgusTFT::page1_handle(void) {
 
   static millis_t flash_time = 0;
-  //  char str_buf[20];
+//  char str_buf[20];
 
   switch (key_value) {
     case 0:
@@ -1320,7 +1327,6 @@ void DgusTFT::page1_handle(void) {
 
     case 3:   // prepare
       ChangePageOfTFT(PAGE_PREPARE);
-
       break;
 
     case 4:   // system
@@ -1499,6 +1505,7 @@ void DgusTFT::page2_handle(void) {
     case 9:   // txtbox 3 click
     case 10:  // txtbox 4 click
     case 11:  // txtbox 5 click
+
       {
         static uint8_t lcd_txtbox_index_last = 0;
 
@@ -1895,8 +1902,8 @@ void DgusTFT::page7_handle(void) // tools
   }
 }
 
-void DgusTFT::page8_handle(void)
-{
+void DgusTFT::page8_handle(void) {
+
   static uint16_t movespeed = 50;
   static float move_dis = 1.0f;
 
@@ -2147,8 +2154,8 @@ void DgusTFT::page10_handle(void)
   SendValueToTFT((uint16_t)getFeedrate_percent(), TXT_PRINT_SPEED_NOW);
 }
 
-void DgusTFT::page11_handle(void)// SYSTEM PAGE BUTTONS
-{
+void DgusTFT::page11_handle(void) {// SYSTEM PAGE BUTTONS
+	
   switch (key_value)
   {
     case 0:
@@ -2168,24 +2175,10 @@ void DgusTFT::page11_handle(void)// SYSTEM PAGE BUTTONS
       }
       break;
 
-    case 2:   // language
-      {
-        if (lcd_info.language == ExtUI::CHS) {
-          lcd_info.language = ExtUI::ENG;
-          if (lcd_info.audio == ExtUI::ON) {
-            ChangePageOfTFT(11);  // PAGE_SYSTEM_ENG_AUDIO_ON-120
-          } else if (lcd_info.audio == ExtUI::OFF) {
-            ChangePageOfTFT(50);  // PAGE_SYSTEM_ENG_AUDIO_OFF-120
-          }
-        } else if (lcd_info.language == ExtUI::ENG) {
-          lcd_info.language = ExtUI::CHS;
-          if (lcd_info.audio == ExtUI::ON) {
-            ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_ON);
-          } else if (lcd_info.audio == ExtUI::OFF) {
-            ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_OFF);
-          }
-        }
-      }
+    case 2:   // language is now Printer Statistics MEL_MOD
+
+			printerStatsToTFT();
+	    ChangePageOfTFT(PAGE_PRINTERSTATS);
       break;
 
     case 3:
@@ -2226,6 +2219,7 @@ void DgusTFT::page11_handle(void)// SYSTEM PAGE BUTTONS
     case 6:
       ChangePageOfTFT(PAGE_RECORD);
       break;
+			
   }
 }
 
@@ -2753,7 +2747,6 @@ void DgusTFT::page26_handle(void)
 
 }
 
-
 void DgusTFT::page27_handle(void)
 {
   static millis_t flash_time = 0;
@@ -2766,6 +2759,7 @@ void DgusTFT::page27_handle(void)
     case 1:   // print stop confirmed
       {
         if (isPrintingFromMedia()) {
+					mel_PrintAbort = true;// abort print flag stops finished counts
           printer_state = AC_printer_stopping;
           stopPrint();
           message_index = 6;
@@ -3093,8 +3087,8 @@ void DgusTFT::page117_handle(void)  // Page CHS Mute handler
   }
 }
 
-void DgusTFT::page170_handle(void)  // ENG Mute handler
-{
+void DgusTFT::page170_handle(void) { // ENG Mute handler
+
   switch (key_value)
   {
     case 0:
@@ -3114,24 +3108,9 @@ void DgusTFT::page170_handle(void)  // ENG Mute handler
       }
       break;
 
-    case 2:   // language
-      {
-        if (lcd_info.language == ExtUI::CHS) {
-          lcd_info.language = ExtUI::ENG;
-          if (lcd_info.audio == ExtUI::ON) {
-            ChangePageOfTFT(11);  // PAGE_SYSTEM_ENG_AUDIO_ON-120
-          } else if (lcd_info.audio == ExtUI::OFF) {
-            ChangePageOfTFT(50);  // PAGE_SYSTEM_ENG_AUDIO_OFF-120
-          }
-        } else if (lcd_info.language == ExtUI::ENG) {
-          lcd_info.language = ExtUI::CHS;
-          if (lcd_info.audio == ExtUI::ON) {
-            ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_ON);
-          } else if (lcd_info.audio == ExtUI::OFF) {
-            ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_OFF);
-          }
-        }
-      }
+    case 2:   // language, now print stats handler MEL_MOD
+			printerStatsToTFT();// MEL_MOD
+	    ChangePageOfTFT(PAGE_PRINTERSTATS);
       break;
 
     case 3:
@@ -3641,6 +3620,21 @@ void DgusTFT::page211_212_handle(void)
   }
 }
 
+void DgusTFT::page213_handle(void) {// MEL_MOD to display printer stats
+ switch (key_value) {
+    case 0:
+      break;
+    case 0x0999: // return
+			  if (lcd_info.audio == ExtUI::ON) {
+          ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_ON);    // PAGE_SYSTEM_ENG_AUDIO_ON - 120
+        } else if (lcd_info.audio == ExtUI::OFF) {
+          ChangePageOfTFT(50);// PAGE_SYSTEM_ENG_AUDIO_OFF - 120
+        }
+			//ChangePageOfTFT(PAGE_SYSTEM_CHS_AUDIO_ON);// go back to the ABOUT SOUND enabled page
+      break;
+ }
+}
+
 void DgusTFT::pop_up_manager(void)
 {
   char str_buf[20];
@@ -3694,8 +3688,42 @@ void DgusTFT::pop_up_manager(void)
   }
 }
 
+void DgusTFT::printerStatsToTFT(void) {// MEL_MOD printer statistics
+  char str_buf[31];
+	char buffer[30];
+	int32_t metresUsed, metresRemainder;
+	
+	printStatistics stats = print_job_timer.getStats();// returns raw data
+	
+	sprintf(str_buf, "Total: %d", stats.totalPrints);
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_TOTAL);// total prints started
+	//SERIAL_ECHOLNPAIR("Total ", str_buf);
+			
+	sprintf(str_buf, "Finished: %d", stats.finishedPrints);
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_FINISHED);// total prints started
 
+	sprintf(str_buf, "Failed: %d", stats.totalPrints - stats.finishedPrints);
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_FAILED);// total prints aborted or failed
 
+	sprintf(str_buf, "Time: %s", duration_t(stats.printTime).toString(buffer));
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_TIME);// print time used
+
+	sprintf(str_buf, "Longest: %s", duration_t(stats.longestPrint).toString(buffer));
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_LONGEST);// longest print
+
+	metresUsed = int32_t(stats.filamentUsed / 1000);
+	metresRemainder = int16_t(stats.filamentUsed / 100) % 10;// and the left over
+
+	sprintf(str_buf, "Filament Used: %d.%dm",metresUsed , metresRemainder);
+	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_FILAMENT);// filament used in M
+	
+//	sprintf(str_buf, "eSteps: %f", VOLUMETRIC_UNIT(planner.settings.axis_steps_per_mm[E_AXIS]));
+//	SendTxtToTFT(str_buf, TXT_STATS_PRINTS_FILAMENT);
+
+	//print_job_timer.showStats();//
+		  //SERIAL_ECHOLNPAIR("Total Prints2: ", buffer);
+	
+	}
 } // namespace
 
 #endif // ANYCUBIC_LCD_DGUS

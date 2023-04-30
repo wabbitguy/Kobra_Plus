@@ -253,6 +253,7 @@ volatile HomingState homing_state = NOT_HOMING;
 // Define gcodeComment - MEL_MOD malebuffy
 const char * gcodeComment = "G-Code Status Area";
 bool activeFilamentChange = false;// MEL_MOD flag for M600 test
+bool mel_PrintAbort = false;// so we don't count aborted prints MEL_MOD
 	 
 // For M109 and M190, this flag may be cleared (by M108) to exit the wait loop
 bool wait_for_heatup = true;

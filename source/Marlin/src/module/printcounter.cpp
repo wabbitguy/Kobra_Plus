@@ -260,6 +260,7 @@ bool PrintCounter::start() {
     if (!paused) {
       data.totalPrints++;
       lastDuration = 0;
+			mel_PrintAbort = false;// always set this to false
     }
     return true;
   }
@@ -272,7 +273,13 @@ bool PrintCounter::stop() {
   TERN_(DEBUG_PRINTCOUNTER, debug(PSTR("stop")));
 
   if (super::stop()) {
-    data.finishedPrints++;
+		if (mel_PrintAbort == true) {
+			mel_PrintAbort = false;// reset the flag but don't increment the finished print
+			//SERIAL_ECHOLN("Printer Counter STOP TRUE FLAG");
+		} else {
+       data.finishedPrints++;
+			//SERIAL_ECHOLN("Print Finished increment");
+		}
     data.printTime += deltaDuration();
 
     if (duration() > data.longestPrint)
@@ -287,9 +294,8 @@ bool PrintCounter::stop() {
 // @Override
 void PrintCounter::reset() {
   TERN_(DEBUG_PRINTCOUNTER, debug(PSTR("stop")));
-
   super::reset();
-  lastDuration = 0;
+	  lastDuration = 0;
 }
 
 #if HAS_SERVICE_INTERVALS

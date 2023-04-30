@@ -35,20 +35,20 @@
 #include "../../../../inc/MarlinConfigPre.h"
 #include "../../ui_api.h"
 
-#define DEVICE_NAME             "Bullwinkle"
+#define DEVICE_NAME             "Dudley Do-Right"
 //#define FIRMWARE_VER            "Marlin V2.0.8.1"
 #if ENABLED(CLASSIC_JERK)
-#define FIRMWARE_VER            "WabbitWare 1.0CJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.1CJ"
 #if ENABLED(LIN_ADVANCE)
-#define FIRMWARE_VER            "WabbitWare 1.0LACJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.1LACJ"
 #else
-#define FIRMWARE_VER            "WabbitWare 1.0CJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.1CJ"
 #endif
 #else
 #if ENABLED(LIN_ADVANCE)
-#define FIRMWARE_VER            "WabbitWare 1.0LAJD"
+#define FIRMWARE_VER            "WabbitWare 1.8.1LAJD"
 #else
-#define FIRMWARE_VER            "WabbitWare 1.6JD"
+#define FIRMWARE_VER            "WabbitWare 1.8.1JD"
 #endif
 #endif
 
@@ -91,6 +91,7 @@
 #define PAGE_LEVEL_ENSURE   (33+PAGE_OFFSET)
 #define PAGE_LEVELING       (34+PAGE_OFFSET)
 
+#define PAGE_PRINTERSTATS   (93+PAGE_OFFSET)// MEL_MOD for printer stats (213)
 
 #define PAGE_AUTO_OFFSET    (115+PAGE_OFFSET)
 
@@ -246,7 +247,12 @@
 #define TXT_ABOUT_PRINT_VOLUMN   0x2770
 #define TXT_ABOUT_TECH_SUPPORT   0x2790
 
-
+#define TXT_STATS_PRINTS_TOTAL	 0x2690
+#define TXT_STATS_PRINTS_FINISHED	 0x2750
+#define TXT_STATS_PRINTS_FAILED  0x2770
+#define TXT_STATS_PRINTS_TIME    0x2790
+#define TXT_STATS_PRINTS_LONGEST 0x2810
+#define TXT_STATS_PRINTS_FILAMENT 0x2830
 
 
 /*********************** KEY VALUE **************************/
@@ -326,10 +332,6 @@
 #define KEY_PRINT_SPEED_ADD 4
 #define KEY_PRINT_SPEED_DEC 5
 #define KEY_SPEED_ENSURE    6
-
-  
-
-
 
 
 #define KEY_PREPARE_TO_MAIN    1  //PREPARE PAGE TO MAIN
@@ -495,8 +497,9 @@ namespace Anycubic {
       static void page207_209_handle(void);
 
       static void page211_212_handle(void);
-
+			static void page213_handle(void);// MEL_MOD printer stats page (213)
       static void pop_up_manager(void);
+			static void printerStatsToTFT(void);//MEL_MOD
 
       void SendtoTFT(PGM_P);
       void SendtoTFTLN(PGM_P);
@@ -520,10 +523,6 @@ namespace Anycubic {
       static void FakeChangePageOfTFT(uint32_t page_index);
       static void LcdAudioSet(ExtUI::audio_t audio);
 			
-			//PREVIEW PAGE
-			static void page213_handle(void);// MEL_MOD malebuffy
-			static void SendVarIconToTFT(const char *vdata, uint32_t address);// MEL_MOD malebuffy
-
     private:
     
   };

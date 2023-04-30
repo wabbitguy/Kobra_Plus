@@ -34,6 +34,7 @@
 
 extern const char * gcodeComment;// MEL_MOD malebuffy
 extern bool activeFilamentChange;// MEL_MOD testing to see if in filament change
+extern bool mel_PrintAbort;// MEL_MOD for aborted prints
 extern char pause_steps ;
 
 void stop();
