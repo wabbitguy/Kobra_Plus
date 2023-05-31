@@ -1356,10 +1356,10 @@ void DgusTFT::page1_handle(void) {
   if (millis() < (flash_time + 1500) ) {
     return;
   }
-			if (printer_state != AC_printer_idle && isPrinting()) {
+			if (printer_state != AC_printer_idle && pause_state != AC_paused_filament_lack && isPrinting()) {
 			  gcodeComment = "Host Printing Mode";// MEL_MOD indicate where GCODE coming from
         ChangePageOfTFT(PAGE_STATUS2);// MEL_MOD auto change to PRINT page if printing via USB
-      } 
+      }  
   flash_time = millis();
 }
 
