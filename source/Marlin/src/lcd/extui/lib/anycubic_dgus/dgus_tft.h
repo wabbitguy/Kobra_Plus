@@ -38,17 +38,17 @@
 #define DEVICE_NAME             "Dudley Do-Right"
 //#define FIRMWARE_VER            "Marlin V2.0.8.1"
 #if ENABLED(CLASSIC_JERK)
-#define FIRMWARE_VER            "WabbitWare 1.8.2CJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.3CJ"
 #if ENABLED(LIN_ADVANCE)
-#define FIRMWARE_VER            "WabbitWare 1.8.2LACJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.3LACJ"
 #else
-#define FIRMWARE_VER            "WabbitWare 1.8.2CJ"
+#define FIRMWARE_VER            "WabbitWare 1.8.3CJ"
 #endif
 #else
 #if ENABLED(LIN_ADVANCE)
-#define FIRMWARE_VER            "WabbitWare 1.8.2LAJD"
+#define FIRMWARE_VER            "WabbitWare 1.8.3LAJD"
 #else
-#define FIRMWARE_VER            "WabbitWare 1.8.2JD"
+#define FIRMWARE_VER            "WabbitWare 1.8.3JD"
 #endif
 #endif
 

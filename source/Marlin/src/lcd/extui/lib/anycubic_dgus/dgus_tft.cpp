@@ -486,9 +486,10 @@ void DgusTFT::FilamentRunout()  {
     PlayTune(BEEPER_PIN, FilamentOut, 1);
 
     if (isPrintingFromMedia()) {
-      pausePrint();
-      printer_state = AC_printer_pausing;
-      pause_state = AC_paused_filament_lack;
+			injectCommands_P(PSTR("M600"));// MEL_MOD will park, eject filament, then resume to load and continue
+      //pausePrint();
+      //printer_state = AC_printer_pausing;
+      //pause_state = AC_paused_filament_lack;
     }
   }
 }
