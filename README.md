@@ -7,6 +7,10 @@ If you are getting great prints from your Kobra PLUS keep in mind that you can't
 
 You will be using a host via USB to complete the firmware update (Repetier Server Pro, Octoprint, Pronterface, etc) if you are using the AnyCubic stock firmware. If you are updating from a prior release of mine release only re-flashing the firmware is needed. I.e. don't do the M502/M500 from a host.
 
+The firmware here was designed to work with Anycubic's original Tri-Gorilla_ProA V1.0.4 motherboard and a Nextion LCD that uses a DWIN_FOLDER. Anycubic has changed their production run so new Kobra Plus's with a Tri-Gorilla_ProB V1.0.2. There have been reports of the original firmware not working on the newer production or replacement motherboards. To determine which motherboard you have, the original uses a USB type B, the newer motherboards use a micro USB connector. The photo shows the difference.
+
+<img width="712" alt="Kobra_Max 2023-08-02 10-59-02" src="https://github.com/wabbitguy/Kobra_Max/assets/8953419/fb21433e-a221-41a9-8b69-c885f36b89a9">
+
 # Update Procedure
 
 1. Power off the Kobra PLUS
